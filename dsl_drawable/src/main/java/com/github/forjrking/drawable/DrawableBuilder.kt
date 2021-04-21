@@ -19,14 +19,11 @@ interface DrawableBuilder {
     companion object {
 
         /** DES: 高版本废弃反射后建议自己赋值 */
-        lateinit var context: Context
+        lateinit var app: Application
 
-        init {
-            try {
-                context = reflectContext()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        //获取context方法
+        fun cxt(): Context = if (this::app.isInitialized) app else {
+            app = reflectContext();app
         }
 
         /**
@@ -35,14 +32,14 @@ interface DrawableBuilder {
          * @return value of px
          */
         internal fun dp2px(dpValue: Float): Float {
-            val scale = context.resources.displayMetrics.density
+            val scale = cxt().resources.displayMetrics.density
             return dpValue * scale
         }
 
         /**
          * DES: 反射获取全局Context  后期可能被google废弃这里会报错
          */
-        private fun reflectContext(): Context {
+        private fun reflectContext(): Application {
             Log.w("DrawableBuilder", "reflectContext called")
             try {
                 return Class.forName("android.app.ActivityThread")

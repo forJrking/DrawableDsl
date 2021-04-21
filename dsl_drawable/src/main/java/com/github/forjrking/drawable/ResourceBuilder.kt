@@ -3,7 +3,6 @@ package com.github.forjrking.drawable
 import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
-import com.github.forjrking.drawable.DrawableBuilder.Companion.context
 
 
 /**
@@ -14,7 +13,7 @@ import com.github.forjrking.drawable.DrawableBuilder.Companion.context
 class ResourceBuilder(@DrawableRes val resId: Int) : DrawableBuilder {
 
     override fun build(): Drawable {
-        return ContextCompat.getDrawable(context, resId)!!
+        return ContextCompat.getDrawable(DrawableBuilder.cxt(), resId)!!
     }
 
     init {

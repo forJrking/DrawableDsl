@@ -10,6 +10,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        DrawableBuilder.app = this.application
+
         linear.dividerDrawable = shapeDrawable {
             shape(ShapeBuilder.Shape.RECTANGLE)
             solid("#84232323")
@@ -52,11 +54,11 @@ class MainActivity : AppCompatActivity() {
         }
         iv3.setOnClickListener { }
 
-        iv5 src resourceDrawable(R.mipmap.ic_launcher)
+        iv5 src resourceDrawable(R.mipmap.ic_launcher_round)
 
         iv6 src layerDrawable {
             addLayer(shapeDrawable {
-                solid("#ffffff")
+                solid("#ffff00")
             })
             addLayer(resourceDrawable(R.mipmap.ic_launcher))
         }

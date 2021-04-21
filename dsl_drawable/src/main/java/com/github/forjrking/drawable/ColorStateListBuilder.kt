@@ -4,7 +4,7 @@ import android.content.res.ColorStateList
 import android.util.SparseIntArray
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
-import com.github.forjrking.drawable.DrawableBuilder.Companion.context
+import com.github.forjrking.drawable.DrawableBuilder.Companion.cxt
 
 /**
  * 创建时间 2019/1/4
@@ -65,10 +65,10 @@ class ColorStateListBuilder constructor(@param:ColorRes private val mNormalColor
         for (x in 0 until size) {
             if (x != size - 1) {
                 colorState[x] = intArrayOf(array.keyAt(x))
-                color[x] = ContextCompat.getColor(context, array.valueAt(x))
+                color[x] = ContextCompat.getColor(cxt(), array.valueAt(x))
             } else {
                 colorState[x] = intArrayOf()
-                color[x] = ContextCompat.getColor(context, mNormalColorId)
+                color[x] = ContextCompat.getColor(cxt(), mNormalColorId)
             }
         }
         return ColorStateList(colorState, color)

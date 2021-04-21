@@ -9,7 +9,7 @@ import android.text.TextUtils
 import androidx.annotation.ColorRes
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import com.github.forjrking.drawable.DrawableBuilder.Companion.context
+import com.github.forjrking.drawable.DrawableBuilder.Companion.cxt
 import com.github.forjrking.drawable.DrawableBuilder.Companion.dp2px
 
 
@@ -111,7 +111,7 @@ class ShapeBuilder : DrawableBuilder {
      * @param colorId 填充的颜色
      */
     fun solid(@ColorRes colorId: Int): ShapeBuilder {
-        mSolidColor = ContextCompat.getColor(context, colorId)
+        mSolidColor = ContextCompat.getColor(cxt(), colorId)
         return this
     }
 
@@ -140,7 +140,7 @@ class ShapeBuilder : DrawableBuilder {
         mSolidColor = if (!TextUtils.isEmpty(colorString) && colorString!!.startsWith("#")) {
             Color.parseColor(colorString.trim())
         } else {
-            ContextCompat.getColor(context, defaultColor)
+            ContextCompat.getColor(cxt(), defaultColor)
         }
         return this
     }
@@ -172,7 +172,7 @@ class ShapeBuilder : DrawableBuilder {
         dpDashGap: Float = 0f, dpDashWidth: Float = 0f
     ): ShapeBuilder {
         mStrokeWidth = dp2px(dpWidth)
-        mStrokeColor = ContextCompat.getColor(context, colorId)
+        mStrokeColor = ContextCompat.getColor(cxt(), colorId)
         mDashGap = dp2px(dpDashGap)
         mDashWidth = dp2px(dpDashWidth)
         return this
@@ -249,14 +249,14 @@ class ShapeBuilder : DrawableBuilder {
         require(angle % 45 == 0) { "'angle' attribute to be a multiple of 45" }
         if (centerColor != null) {
             val color = IntArray(3)
-            color[0] = ContextCompat.getColor(context, startColor)
-            color[1] = ContextCompat.getColor(context, centerColor)
-            color[2] = ContextCompat.getColor(context, endColor)
+            color[0] = ContextCompat.getColor(cxt(), startColor)
+            color[1] = ContextCompat.getColor(cxt(), centerColor)
+            color[2] = ContextCompat.getColor(cxt(), endColor)
             mGradientColor = color
         }else{
             val color = IntArray(2)
-            color[0] = ContextCompat.getColor(context, startColor)
-            color[1] = ContextCompat.getColor(context, endColor)
+            color[0] = ContextCompat.getColor(cxt(), startColor)
+            color[1] = ContextCompat.getColor(cxt(), endColor)
             mGradientColor = color
         }
         mAngle = angle
