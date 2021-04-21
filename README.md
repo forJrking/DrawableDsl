@@ -74,7 +74,7 @@ btn.background = selectorDrawable {
 
 ## 开源协议
 
-```less
+```
 Copyright 2020-present forjrking
 
 Licensed under the Apache License, Version 2.0 (the "License");
