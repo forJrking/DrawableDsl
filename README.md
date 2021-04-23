@@ -1,6 +1,6 @@
-# 用dsl创建drawable
+## 放弃xml写drawable，试试DSL写法
 
->通常我们在`res/drawable`下面自定义`shape`和`selector`来满足一些UI的设计，但是由于`xml`最终转换为`drawable`需要经过`IO`和反射创建，会有一些性能损耗，另外随着项目的增大和模块化等，很多通用的样式并不能快速复用，需要合理的项目资源管理规范才能实施。那么通过代码直接创建这些`drawable`，可以在一定程度上降低这些副作用。本篇介绍用`kotlin DSL`简洁的语法特性来实现常见的`drawable`.
+<img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a69f71166c004ce5a00087925486426d~tplv-k3u1fbpfcp-zoom-1.image" alt="RECTANGLE" style="zoom:50%;" />
 
 ## Kotlin应该这样写系列
 
@@ -9,6 +9,8 @@
 [Glide用Kotlin应该这样封装（一）](https://juejin.cn/post/6946396538289537061)
 
 [Glide用Kotlin应该这样封装（二）](https://juejin.cn/post/6948594232626003999)
+
+[drawable用Kotlin应该这样写](https://juejin.cn/post/6953472037012635655)
 
 ## 集成和使用
 1. 在项目级的build.gradle文件种添加仓库Jitpack：
@@ -19,30 +21,26 @@ allprojects {
         maven { url 'https://jitpack.io' }
     }
 }
-```
-
-2. 添加依赖
-
-```groovy
+//添加依赖
 dependencies {
 	implementation 'com.github.forJrking:DrawableDsl:0.0.3’
 }
 ```
 
-3. 抛弃xml创建方式使用代码
+2. 抛弃xml创建方式使用代码
 
 ```kotlin
-//扩展变量开省略setImageDrawable()括号
-image.src = shapeDrawable {
-  	//指定shape样式
-    shape(ShapeBuilder.Shape.RECTANGLE)
-  	//圆角，支持4个角单独设置
-  	corner(20f)
-  	//solid 颜色
-    solid("#ABE2E3")
-  	//stroke 颜色，边框dp，虚线设置
-    stroke(android.R.color.white, 2f, 5f, 8f)
-}
+//扩展变量开省略setImageDrawable()括号                                                         
+image.src = shapeDrawable {                                    
+  	//指定shape样式                                    
+    shape(ShapeBuilder.Shape.RECTANGLE)                                    
+  	//圆角，支持4个角单独设置                                    
+  	corner(20f)                                    
+  	//solid 颜色                                    
+    solid("#ABE2E3")                                    
+  	//stroke 颜色，边框dp，虚线设置                                    
+    stroke(android.R.color.white, 2f, 5f, 8f)                                    
+}  
 //按钮点击样式
 btn.background = selectorDrawable {
   	//默认样式
@@ -57,6 +55,13 @@ btn.background = selectorDrawable {
     }
 }
 ```
+
+## 代码对应效果预览
+
+<img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/eb5945489a92401294163a2aea9f6224~tplv-k3u1fbpfcp-zoom-1.image" alt="shape_line" style="zoom:50%;" />
+<img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/070a4175b9eb4fb5a240bd5804f305e5~tplv-k3u1fbpfcp-zoom-1.image" alt="OVAL" style="zoom:50%;" />
+<img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5c60c733b84c4636b296daea51a6b1e3~tplv-k3u1fbpfcp-zoom-1.image" alt="LayerList" style="zoom:50%;" />
+<img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d221f05e5eb146a79b6bab4ca0642461~tplv-k3u1fbpfcp-zoom-1.image" alt="Selector" style="zoom:55%;" />
 
 ## 注意事项
 
@@ -79,14 +84,6 @@ iv.src = shapeDrawable {
     size(200f, 200f)
 }
 ```
-
-## 代码对应效果预览
-
-<img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/eb5945489a92401294163a2aea9f6224~tplv-k3u1fbpfcp-zoom-1.image" alt="shape_line" style="zoom:50%;" />
-<img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a69f71166c004ce5a00087925486426d~tplv-k3u1fbpfcp-zoom-1.image" alt="RECTANGLE" style="zoom:50%;" />
-<img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/070a4175b9eb4fb5a240bd5804f305e5~tplv-k3u1fbpfcp-zoom-1.image" alt="OVAL" style="zoom:50%;" />
-<img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5c60c733b84c4636b296daea51a6b1e3~tplv-k3u1fbpfcp-zoom-1.image" alt="LayerList" style="zoom:50%;" />
-<img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d221f05e5eb146a79b6bab4ca0642461~tplv-k3u1fbpfcp-zoom-1.image" alt="Selector" style="zoom:55%;" />
 
 ## 作者
 
