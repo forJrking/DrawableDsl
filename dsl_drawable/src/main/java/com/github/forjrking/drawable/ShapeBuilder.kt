@@ -1,37 +1,37 @@
 package com.github.forjrking.drawable
 
-import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
-import android.text.TextUtils
 import androidx.annotation.ColorRes
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.github.forjrking.drawable.DrawableBuilder.Companion.cxt
 import com.github.forjrking.drawable.DrawableBuilder.Companion.dp2px
+import com.github.forjrking.drawable.DrawableBuilder.Companion.string2Color
+import java.lang.reflect.Field
+import kotlin.math.roundToInt
 
+
+enum class Shape {
+    /*** Shape is a rectangle, possibly with rounded corners*/
+    RECTANGLE,
+
+    /*** Shape is an ellipse*/
+    OVAL,
+
+    /*** Shape is a line*/
+    LINE,
+
+//    /*** Shape is a ring.*/
+//    RING,
+}
 
 /**
  * 创建时间 2019/1/3
  * 描述     shape样式的构建类，所有距离值均可传dp
  */
 class ShapeBuilder : DrawableBuilder {
-
-    enum class Shape {
-        /*** Shape is a rectangle, possibly with rounded corners*/
-        RECTANGLE,
-
-        /*** Shape is an ellipse*/
-        OVAL,
-
-        /*** Shape is a line*/
-        LINE,
-
-        /*** Shape is a ring.*/
-        RING,
-    }
 
     private var mRadius = 0f
     private var mRadii: FloatArray? = null
@@ -50,10 +50,10 @@ class ShapeBuilder : DrawableBuilder {
     /**
      * 设置四个角的圆角
      *
-     * @param dpRadius 圆角的半径
+     * @param radius 圆角的半径
      */
-    fun corner(dpRadius: Float): ShapeBuilder {
-        mRadius = dp2px(dpRadius)
+    fun corner(radius: Float, isDp: Boolean = true): ShapeBuilder {
+        mRadius = if (isDp) dp2px(radius) else radius
         return this
     }
 
@@ -69,12 +69,13 @@ class ShapeBuilder : DrawableBuilder {
         leftTop: Float,
         rightTop: Float,
         leftBottom: Float,
-        rightBottom: Float
+        rightBottom: Float,
+        isDp: Boolean = true
     ): ShapeBuilder {
-        val leftTopPx = dp2px(leftTop)
-        val rightTopPx = dp2px(rightTop)
-        val leftBottomPx = dp2px(leftBottom)
-        val rightBottomPx = dp2px(rightBottom)
+        val leftTopPx = if (isDp) dp2px(leftTop) else leftTop
+        val rightTopPx = if (isDp) dp2px(rightTop) else rightTop
+        val leftBottomPx = if (isDp) dp2px(leftBottom) else leftBottom
+        val rightBottomPx = if (isDp) dp2px(rightBottom) else rightBottom
         mRadii = floatArrayOf(
             leftTopPx, leftTopPx,
             rightTopPx, rightTopPx,
@@ -84,15 +85,20 @@ class ShapeBuilder : DrawableBuilder {
         return this
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
-    fun padding(left: Float, top: Float, right: Float, bottom: Float): ShapeBuilder {
+    fun padding(
+        left: Float, top: Float, right: Float, bottom: Float, isDp: Boolean = true
+    ): ShapeBuilder {
         mPadding = Rect().apply {
-            set(
-                dp2px(left).toInt(),
-                dp2px(top).toInt(),
-                dp2px(right).toInt(),
-                dp2px(bottom).toInt()
-            )
+            if (isDp) {
+                set(
+                    dp2px(left).roundToInt(),
+                    dp2px(top).roundToInt(),
+                    dp2px(right).roundToInt(),
+                    dp2px(bottom).roundToInt()
+                )
+            } else {
+                set(left.roundToInt(), top.roundToInt(), right.roundToInt(), bottom.roundToInt())
+            }
         }
         return this
     }
@@ -100,9 +106,9 @@ class ShapeBuilder : DrawableBuilder {
     /**
      * 设置size
      */
-    fun size(dpWidth: Float, dpHeight: Float): ShapeBuilder {
-        mWidth = dp2px(dpWidth)
-        mHeight = dp2px(dpHeight)
+    fun size(width: Float, height: Float, isDp: Boolean = true): ShapeBuilder {
+        mWidth = if (isDp) dp2px(width) else width
+        mHeight = if (isDp) dp2px(height) else height
         return this
     }
 
@@ -121,27 +127,16 @@ class ShapeBuilder : DrawableBuilder {
      * @param colorString 颜色的string值
      */
     fun solid(colorString: String): ShapeBuilder {
-        try {
-            if (!TextUtils.isEmpty(colorString)) {
-                mSolidColor = Color.parseColor(colorString.trim())
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        mSolidColor = string2Color(colorString)
         return this
     }
 
     /**
      * 设置填充色
-     *
      * @param colorString 颜色的string值
      */
     fun solid(colorString: String?, @ColorRes defaultColor: Int): ShapeBuilder {
-        mSolidColor = if (!TextUtils.isEmpty(colorString) && colorString!!.startsWith("#")) {
-            Color.parseColor(colorString.trim())
-        } else {
-            ContextCompat.getColor(cxt(), defaultColor)
-        }
+        mSolidColor = string2Color(colorString, ContextCompat.getColor(cxt(), defaultColor))
         return this
     }
 
@@ -154,7 +149,7 @@ class ShapeBuilder : DrawableBuilder {
         mShape = when (shape) {
             Shape.OVAL -> GradientDrawable.OVAL
             Shape.LINE -> GradientDrawable.LINE
-            Shape.RING -> GradientDrawable.RING
+//            Shape.RING -> GradientDrawable.RING
             else -> GradientDrawable.RECTANGLE
         }
         return this
@@ -169,38 +164,30 @@ class ShapeBuilder : DrawableBuilder {
     @JvmOverloads
     fun stroke(
         @ColorRes colorId: Int, dpWidth: Float,
-        dpDashGap: Float = 0f, dpDashWidth: Float = 0f
+        dpDashGap: Float = 0f, dpDashWidth: Float = 0f, isDp: Boolean = true
     ): ShapeBuilder {
-        mStrokeWidth = dp2px(dpWidth)
-        mStrokeColor = ContextCompat.getColor(cxt(), colorId)
-        mDashGap = dp2px(dpDashGap)
-        mDashWidth = dp2px(dpDashWidth)
-        return this
+        return strokeInt(
+            ContextCompat.getColor(cxt(), colorId),
+            dpWidth,
+            dpDashGap,
+            dpDashWidth,
+            isDp
+        )
     }
 
     /**
      * 设置线条的颜色和粗细
      *
      * @param colorString 线条颜色
-     * @param dpWidth     线条粗细，dp
+     * @param width     线条粗细，dp
      */
     @JvmOverloads
     fun stroke(
-        colorString: String, dpWidth: Float,
-        dpDashGap: Float = 0f,
-        dpDashWidth: Float = 0f
+        colorString: String, width: Float,
+        dashGap: Float = 0f,
+        dashWidth: Float = 0f, isDp: Boolean = true
     ): ShapeBuilder {
-        mStrokeWidth = dp2px(dpWidth)
-        try {
-            if (!TextUtils.isEmpty(colorString)) {
-                mStrokeColor = Color.parseColor(colorString.trim())
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        mDashGap = dp2px(dpDashGap)
-        mDashWidth = dp2px(dpDashWidth)
-        return this
+        return strokeInt(string2Color(colorString), width, dashGap, dashWidth, isDp)
     }
 
     /**
@@ -210,27 +197,63 @@ class ShapeBuilder : DrawableBuilder {
     @JvmOverloads
     fun strokeInt(
         colorInt: Int,
-        dpWidth: Float,
-        dpDashGap: Float = 0f,
-        dpDashWidth: Float = 0f
+        width: Float,
+        dashGap: Float = 0f,
+        dashWidth: Float = 0f,
+        isDp: Boolean = true
     ): ShapeBuilder {
-        mStrokeWidth = dp2px(dpWidth)
         mStrokeColor = colorInt
-        mDashGap = dp2px(dpDashGap)
-        mDashWidth = dp2px(dpDashWidth)
+        mStrokeWidth = if (isDp) dp2px(width) else dashWidth
+        mDashGap = if (isDp) dp2px(dashGap) else dashWidth
+        mDashWidth = if (isDp) dp2px(dashWidth) else dashWidth
         return this
     }
 
     /**
-     * 设置虚线 px为单位
+     * 设置虚线
      *
      * @param dashGap   实线的距离
      * @param dashWidth 实线的宽度
      */
-    fun dash(dashGap: Float, dashWidth: Float): ShapeBuilder {
-        mDashGap = dashGap
-        mDashWidth = dashWidth
+    fun dash(dashGap: Float, dashWidth: Float, isDp: Boolean = true): ShapeBuilder {
+        mDashGap = if (isDp) dp2px(dashGap) else dashWidth
+        mDashWidth = if (isDp) dp2px(dashWidth) else dashWidth
         return this
+    }
+
+    @JvmOverloads
+    fun gradient(
+        angle: Int, startColor: String, endColor: String,
+        centerColor: String? = null
+    ): ShapeBuilder {
+        return gradientInt(
+            angle,
+            startColor = string2Color(startColor),
+            endColor = string2Color(endColor),
+            centerColor = if (centerColor == null) null
+            else string2Color(centerColor)
+        )
+    }
+
+    /**
+     * 设置渐变色 资源id方式
+     *
+     * @param startColor 起始颜色
+     * @param endColor   结束颜色
+     * @param angle      渐变角度，必须为45的倍数
+     */
+    @JvmOverloads
+    fun gradient(
+        angle: Int,
+        @ColorRes startColor: Int, @ColorRes endColor: Int, @ColorRes centerColor: Int? = null,
+    ): ShapeBuilder {
+        return gradientInt(
+            angle,
+            startColor = ContextCompat.getColor(cxt(), startColor),
+            endColor = ContextCompat.getColor(cxt(), endColor),
+            centerColor = if (centerColor == null) null
+            else ContextCompat.getColor(cxt(), centerColor)
+        )
     }
 
     /**
@@ -240,23 +263,21 @@ class ShapeBuilder : DrawableBuilder {
      * @param endColor   结束颜色
      * @param angle      渐变角度，必须为45的倍数
      */
-    fun gradient(
-        angle: Int,
-        @ColorRes startColor: Int,
-        @ColorRes endColor: Int,
-        @ColorRes centerColor: Int? = null,
+    @JvmOverloads
+    fun gradientInt(
+        angle: Int, startColor: Int, endColor: Int, centerColor: Int? = null,
     ): ShapeBuilder {
         require(angle % 45 == 0) { "'angle' attribute to be a multiple of 45" }
         if (centerColor != null) {
             val color = IntArray(3)
-            color[0] = ContextCompat.getColor(cxt(), startColor)
-            color[1] = ContextCompat.getColor(cxt(), centerColor)
-            color[2] = ContextCompat.getColor(cxt(), endColor)
+            color[0] = startColor
+            color[1] = centerColor
+            color[2] = endColor
             mGradientColor = color
-        }else{
+        } else {
             val color = IntArray(2)
-            color[0] = ContextCompat.getColor(cxt(), startColor)
-            color[1] = ContextCompat.getColor(cxt(), endColor)
+            color[0] = startColor
+            color[1] = endColor
             mGradientColor = color
         }
         mAngle = angle
@@ -264,7 +285,7 @@ class ShapeBuilder : DrawableBuilder {
     }
 
     override fun build(): Drawable {
-        val gradientDrawable: GradientDrawable
+        val drawable: GradientDrawable
         if (mGradientColor != null) {
             val orientation = when (mAngle % 360) {
                 45 -> GradientDrawable.Orientation.BL_TR
@@ -277,37 +298,65 @@ class ShapeBuilder : DrawableBuilder {
                 0 -> GradientDrawable.Orientation.LEFT_RIGHT
                 else -> GradientDrawable.Orientation.LEFT_RIGHT
             }
-            gradientDrawable = GradientDrawable(orientation, mGradientColor)
+            drawable = GradientDrawable(orientation, mGradientColor)
         } else {
-            gradientDrawable = GradientDrawable()
-            gradientDrawable.setColor(mSolidColor)
+            drawable = GradientDrawable()
+            drawable.setColor(mSolidColor)
         }
+        //设置边框和虚线
         if (mStrokeWidth != 0f) {
             if (mDashWidth != 0f && mDashGap != 0f) {
-                gradientDrawable.setStroke(
-                    (mStrokeWidth + .5f).toInt(),
+                drawable.setStroke(
+                    mStrokeWidth.roundToInt(),
                     mStrokeColor, mDashWidth, mDashGap
                 )
             } else {
-                gradientDrawable.setStroke((mStrokeWidth + .5f).toInt(), mStrokeColor)
+                drawable.setStroke(mStrokeWidth.roundToInt(), mStrokeColor)
             }
         }
+//        圆角
         if (mRadius != 0f) {
-            gradientDrawable.cornerRadius = mRadius
+            drawable.cornerRadius = mRadius
         } else if (mRadii != null) {
-            gradientDrawable.cornerRadii = mRadii
+            drawable.cornerRadii = mRadii
+        }
+//        size
+        if (mWidth != 0f && mHeight != 0f) {
+            drawable.setSize(mWidth.roundToInt(), mHeight.roundToInt())
         }
 
-        if (mWidth != 0f && mHeight != 0f) {
-            gradientDrawable.setSize((mWidth + .5f).toInt(), (mHeight + .5f).toInt())
-        }
+//        padding属性, 全版本兼容
         mPadding?.let {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                gradientDrawable.setPadding(it.left, it.top, it.right, it.bottom)
+                drawable.setPadding(it.left, it.top, it.right, it.bottom)
+            } else {
+                fun setPadding(obj: Any?, clazz: Class<*>, rect: Rect) {
+                    val mPaddingField = clazz.declaredField("mPadding")
+                    mPaddingField.set(obj, rect)
+                }
+
+                try {
+                    setPadding(drawable, GradientDrawable::class.java, it)
+                    val gradientStateClass = Class.forName(CLASS_GRADIENT_STATE)
+                    setPadding(drawable.constantState, gradientStateClass, it)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
-        gradientDrawable.shape = mShape
-        return gradientDrawable
+        drawable.shape = mShape
+        return drawable
+    }
+
+    companion object {
+        private const val CLASS_GRADIENT_STATE =
+            "android.graphics.drawable.GradientDrawable\$GradientState"
+
+        private inline fun Class<*>.declaredField(fieldName: String): Field {
+            val declaredField = this.getDeclaredField(fieldName)
+            declaredField.isAccessible = true
+            return declaredField
+        }
     }
 
 }

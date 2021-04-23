@@ -3,6 +3,7 @@ package com.github.forjrking.drawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.InsetDrawable
 import com.github.forjrking.drawable.DrawableBuilder.Companion.dp2px
+import kotlin.math.roundToInt
 
 /**
  * 创建时间 2019/1/3
@@ -19,8 +20,8 @@ class InsetBuilder : DrawableBuilder {
      * 设置统一的边距
      * @param inset 统一的边距
      */
-    fun setInset(inset: Int): InsetBuilder {
-        val insetPx = dp2px(inset.toFloat())
+    fun setInset(inset: Int, isDp: Boolean = true): InsetBuilder {
+        val insetPx = if (isDp) dp2px(inset.toFloat()) else inset.toFloat()
         mInsetLeft = insetPx
         mInsetRight = insetPx
         mInsetTop = insetPx
@@ -36,21 +37,27 @@ class InsetBuilder : DrawableBuilder {
      * @param insetRight  右边距
      * @param insetBottom 下边距
      */
-    fun setInset(insetLeft: Int, insetTop: Int, insetRight: Int, insetBottom: Int): InsetBuilder {
-        mInsetLeft = dp2px(insetLeft.toFloat())
-        mInsetRight = dp2px(insetRight.toFloat())
-        mInsetTop = dp2px(insetTop.toFloat())
-        mInsetBottom = dp2px(insetBottom.toFloat())
+    fun setInset(
+        insetLeft: Int,
+        insetTop: Int,
+        insetRight: Int,
+        insetBottom: Int,
+        isDp: Boolean = true
+    ): InsetBuilder {
+        mInsetLeft = if (isDp) dp2px(insetLeft.toFloat()) else insetLeft.toFloat()
+        mInsetRight = if (isDp) dp2px(insetRight.toFloat()) else insetRight.toFloat()
+        mInsetTop = if (isDp) dp2px(insetTop.toFloat()) else insetTop.toFloat()
+        mInsetBottom = if (isDp) dp2px(insetBottom.toFloat()) else insetBottom.toFloat()
         return this
     }
 
     override fun build(): Drawable {
         return InsetDrawable(
             drawable,
-            mInsetLeft.toInt(),
-            mInsetTop.toInt(),
-            mInsetRight.toInt(),
-            mInsetBottom.toInt()
+            mInsetLeft.roundToInt(),
+            mInsetTop.roundToInt(),
+            mInsetRight.roundToInt(),
+            mInsetBottom.roundToInt()
         )
     }
 

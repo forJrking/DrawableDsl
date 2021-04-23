@@ -2,6 +2,7 @@ package com.github.forjrking.drawable
 
 import android.app.Application
 import android.content.Context
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.util.Log
 
@@ -35,6 +36,19 @@ interface DrawableBuilder {
             val scale = cxt().resources.displayMetrics.density
             return dpValue * scale
         }
+
+        /**字符串转换为颜色*/
+        fun string2Color(colorString: String?, defaultColor: Int = Color.TRANSPARENT): Int =
+            if (!colorString.isNullOrEmpty()) {
+                try {
+                    Color.parseColor(colorString.trim())
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    defaultColor
+                }
+            } else {
+                defaultColor
+            }
 
         /**
          * DES: 反射获取全局Context  后期可能被google废弃这里会报错

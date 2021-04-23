@@ -55,6 +55,14 @@ inline fun colorStateList(
 }
 
 /**为所有ImageView添加 infix函数去掉括号*/
+@Deprecated("建议使用扩展函数", ReplaceWith("imageView.src = xxx"))
 infix fun ImageView.src(drawable: Drawable?) {
     this.setImageDrawable(drawable)
 }
+
+/**扩展函数用法*/
+var ImageView.src: Drawable
+    get() = drawable
+    set(value) {
+        this.setImageDrawable(value)
+    }

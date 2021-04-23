@@ -9,6 +9,7 @@ import android.os.Build
 import android.view.Gravity
 import android.view.View
 import com.github.forjrking.drawable.DrawableBuilder.Companion.dp2px
+import kotlin.math.roundToInt
 
 /**
  * 创建时间 2019/1/3
@@ -68,15 +69,15 @@ class LayerListBuilder : DrawableBuilder {
         }
 
         fun padding(left: Int, top: Int, right: Int, bottom: Int): LayerInset {
-            this.left = (dp2px(left.toFloat()) + .5f).toInt()
-            this.top = (dp2px(top.toFloat()) + .5f).toInt()
-            this.right = (dp2px(right.toFloat()) + .5f).toInt()
-            this.bottom = (dp2px(bottom.toFloat()) + .5f).toInt()
+            this.left = dp2px(left.toFloat()).roundToInt()
+            this.top = dp2px(top.toFloat()).roundToInt()
+            this.right = dp2px(right.toFloat()).roundToInt()
+            this.bottom = dp2px(bottom.toFloat()).roundToInt()
             return this
         }
 
         fun padding(padding: Int): LayerInset {
-            val paddingPx = (dp2px(padding.toFloat()) + .5f).toInt()
+            val paddingPx = dp2px(padding.toFloat()).roundToInt()
             left = paddingPx
             top = paddingPx
             right = paddingPx
@@ -86,13 +87,13 @@ class LayerListBuilder : DrawableBuilder {
 
         @TargetApi(Build.VERSION_CODES.M)
         fun width(width: Int): LayerInset {
-            this.width = (dp2px(width.toFloat()) + .5f).toInt()
+            this.width = dp2px(width.toFloat()).roundToInt()
             return this
         }
 
         @TargetApi(Build.VERSION_CODES.M)
         fun height(height: Int): LayerInset {
-            this.height = (dp2px(height.toFloat()) + .5f).toInt()
+            this.height = dp2px(height.toFloat()).roundToInt()
             return this
         }
 

@@ -25,15 +25,15 @@ allprojects {
 
 ```groovy
 dependencies {
-	implementation 'com.github.forJrking:DrawableDsl:0.0.1’
+	implementation 'com.github.forJrking:DrawableDsl:0.0.3’
 }
 ```
 
 3. 抛弃xml创建方式使用代码
 
 ```kotlin
-// infix用法用于去掉括号更加简洁，详细后面说明
-image src = shapeDrawable {
+//扩展变量开省略setImageDrawable()括号
+image.src = shapeDrawable {
   	//指定shape样式
     shape(ShapeBuilder.Shape.RECTANGLE)
   	//圆角，支持4个角单独设置
@@ -58,6 +58,28 @@ btn.background = selectorDrawable {
 }
 ```
 
+## 注意事项
+
+```kotlin
+//如果要使用shape制作圆环 ring，由于ring的api只能通过xml,而且一般要预览
+// 这里建议用OVAL方式代替
+iv.src = shapeDrawable {
+    shape(Shape.OVAL)
+    solid(android.R.color.transparent)
+    stroke(android.R.color.black, 12f)
+    size(200f, 200f)
+}
+
+//所有的大小设置，圆角等支持，默认dp
+iv.src = shapeDrawable {
+    solid(android.R.color.black)
+  //设置成px
+    size(200f, 200f,isDp = false) 
+  //设置dp
+    size(200f, 200f)
+}
+```
+
 ## 代码对应效果预览
 
 <img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/eb5945489a92401294163a2aea9f6224~tplv-k3u1fbpfcp-zoom-1.image" alt="shape_line" style="zoom:50%;" />
@@ -68,9 +90,10 @@ btn.background = selectorDrawable {
 
 ## 作者
 
-👨岛主  
+👨：岛主  
+📮：forjrking@sina.com
+
 目前在西安求职中，有内推或岗位请联系我
-邮箱：forjrking@sina.com
 
 ## 开源协议
 
