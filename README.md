@@ -90,7 +90,7 @@ iv.src = shapeDrawable {
 👨：岛主  
 📮：forjrking@sina.com
 
-目前在西安求职中，有内推或岗位请联系我
+有内推或岗位请联系我
 
 ## 开源协议
 
